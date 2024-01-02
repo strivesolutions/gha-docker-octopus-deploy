@@ -6,6 +6,12 @@ inputs:
     description: "The working directory to run the docker build from."
     default: "."
 
+  IMAGE_NAME:
+    required: true
+
+  VERSION:
+    required: true
+
   DOCKERFILE:
     description: "The path to the dockerfile to build."
     default: "Dockerfile"
@@ -35,17 +41,11 @@ inputs:
 
   OCTOPUS_PROJECT:
     required: true
-  
+
   OCTOPUS_PROCESS:
     required: true
 
   OCTOPUS_CONTAINER_NAME:
-    required: true
-
-  IMAGE_NAME:
-    required: true
-
-  VERSION:
     required: true
 
 runs:
@@ -75,7 +75,7 @@ runs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    release
+    # release
     - name: Install Octopus CLI 🐙
       uses: OctopusDeploy/install-octopus-cli-action@v3.1.0
       with:
