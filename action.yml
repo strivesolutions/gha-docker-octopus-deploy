@@ -81,7 +81,7 @@ runs:
           VERSION=${{ inputs.VERSION }}
         file: ${{ inputs.DOCKERFILE }}
         push: true
-        tags: ${{ steps.calculate_tag.outputs.tag }}
+        tags: ${{ env.tag }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
