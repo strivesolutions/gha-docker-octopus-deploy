@@ -65,7 +65,6 @@ runs:
 
     - name: Calculate tag
       id: calculate_tag
-      # ${{inputs.REGISTRY_URL}}/${{ inputs.REGISTRY_REPOSITORY }}/${{ inputs.IMAGE_NAME }}:${{ inputs.VERSION }}
       shell: bash
       run: |
         url=${{ inputs.REGISTRY_URL }}
