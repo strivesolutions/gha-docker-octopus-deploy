@@ -1,0 +1,93 @@
+name: "Docker Build + Octopus Deploy"
+description: "Build a container using docker/buildx and deploy using octopus."
+
+inputs:
+  WORKING_DIR:
+    description: "The working directory to run the docker build from."
+    default: "."
+
+  DOCKERFILE:
+    description: "The path to the dockerfile to build."
+    default: "Dockerfile"
+
+  REGISTRY_URL:
+    description: "The url of the docker registry to push to."
+    required: true
+
+  REGISTRY_REPOSITORY:
+    description: "The name of the docker repository to push to."
+    required: true
+
+  REGISTRY_USER:
+    required: true
+
+  REGISTRY_PASSWORD:
+    required: true
+
+  OCTOPUS_API_KEY:
+    required: true
+
+  OCTOPUS_SERVER:
+    required: true
+
+  OCTOPUS_SPACE:
+    required: true
+
+  OCTOPUS_PROJECT:
+    required: true
+  
+  OCTOPUS_PROCESS:
+    required: true
+
+  OCTOPUS_CONTAINER_NAME:
+    required: true
+
+  IMAGE_NAME:
+    required: true
+
+  VERSION:
+    required: true
+
+runs:
+  using: "composite"
+
+  steps:
+    # build
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Docker login
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.REGISTRY_URL }}
+        username: ${{ inputs.REGISTRY_USER }}
+        password: ${{ inputs.REGISTRY_PASSWORD }}
+
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ inputs.WORKING_DIR }}
+        build-args: |
+          VERSION=${{ inputs.VERSION }}
+        file: ${{ inputs.DOCKERFILE }}
+        push: true
+        tags: ${{inputs.REGISTRY_URL}}/${{ inputs.REGISTRY_REPOSITORY }}/${{ inputs.IMAGE_NAME }}:${{ inputs.VERSION }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    release
+    - name: Install Octopus CLI 🐙
+      uses: OctopusDeploy/install-octopus-cli-action@v3.1.0
+      with:
+        version: latest
+
+    - name: Create a release in Octopus Deploy 🐙
+      uses: OctopusDeploy/create-release-action@v3.2.0
+      with:
+        api_key: ${{ inputs.OCTOPUS_API_KEY }}
+        server: ${{ inputs.OCTOPUS_SERVER }}
+        space: ${{ inputs.OCTOPUS_SPACE }}
+        project: ${{ inputs.OCTOPUS_PROJECT }}
+        packages: |
+          ${{ inputs.OCTOPUS_PROCESS}}:${{ inputs.OCTOPUS_CONTAINER_NAME }}:${{ inputs.VERSION }}
+        release_number: ${{ inputs.VERSION }}
