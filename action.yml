@@ -71,7 +71,7 @@ runs:
         # strip trailing / from inputs.REGISTRY_URL
         url=${{ inputs.REGISTRY_URL }}
         url=${url%/}
-        echo "tag=$url/${{ inputs.REGISTRY_REPOSITORY }}/${{ inputs.IMAGE_NAME }}:${{ inputs.VERSION }} >> $GITHUB_ENV"
+        echo "tag=$url/${{ inputs.REGISTRY_REPOSITORY }}/${{ inputs.IMAGE_NAME }}:${{ inputs.VERSION }}" >> $GITHUB_ENV
 
     - name: Build and push
       uses: docker/build-push-action@v5
