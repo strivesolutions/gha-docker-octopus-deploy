@@ -77,7 +77,7 @@ runs:
         context: ${{ inputs.WORKING_DIR }}
         build-args: |
           VERSION=${{ inputs.VERSION }}
-        file: ${{ inputs.DOCKERFILE }}
+        file: ${{ inputs.WORKING_DIR }}/${{ inputs.DOCKERFILE }}
         push: true
         tags: ${{ env.tag }}
         cache-from: type=gha
